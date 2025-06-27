@@ -1,23 +1,20 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from typing import List
-from pydantic import BaseModel
+import streamlit as st
+import requests
 
-app = FastAPI()
+st.title("🔍 Teste de Conexão com a API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Permite acesso de qualquer origem (ideal para Streamlit Cloud)
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+def obter_velas():
+    try:
+        url = "https://aviator-api-bz4x.onrender.com/velas"
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"erro": f"Status code: {response.status_code}"}
+    except Exception as e:
+        return {"erro": str(e)}
 
-class Candle(BaseModel):
-    id: int
-    value: float
+dados = obter_velas()
 
-@app.get("/velas", response_model=List[Candle])
-def get_velas():
-    candles = [{"id": i + 1, "value": round(1 + (i % 5) * 0.5, 2)} for i in range(20)]
-    return candles
+st.write("📦 Resposta da API:")
+st.json(dados)

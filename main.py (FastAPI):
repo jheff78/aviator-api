@@ -1,1 +1,23 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Liberar CORS para o Streamlit
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mock das últimas 20 velas
+@app.get("/velas")
+def get_velas():
+    velas = [
+        {"id": i + 1, "value": v}
+        for i, v in enumerate([1, 1.5, 2, 1, 3, 2, 1.2, 1.8, 2.5, 1,
+                               1.4, 1.1, 1.3, 2.5, 3, 1, 1.5, 2, 2.5, 10.2])
+    ]
+    return velas
 
